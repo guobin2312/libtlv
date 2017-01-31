@@ -47,31 +47,31 @@ static inline unsigned int LIBTLV_OPT_TSZMAX(unsigned int opt)
     switch (opt & LIBTLV_OPT_TSZMASK)
     {
         case 0:
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
             if (opt & LIBTLV_OPT_PADDING)
                 ret = 0xFE;
             else
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
                 ret = 0xFF;
             break;
         case LIBTLV_OPT_T2BYTES:
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
             if (opt & LIBTLV_OPT_PADDING)
                 ret = 0xFEFF;
             else
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
                 ret = 0xFFFF;
             break;
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
         case LIBTLV_OPT_T4BVARL:
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
             if (opt & LIBTLV_OPT_PADDING)
                 ret = 0xFDFFFFF;
             else
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
                 ret = 0xFFFFFFF;
             break;
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
         default:
             ret = 0;
             break;
@@ -104,11 +104,11 @@ static inline unsigned int LIBTLV_OPT_LSZMAX(unsigned int opt)
         case LIBTLV_OPT_L2BYTES:
             ret = 0xFFFF;
             break;
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
         case LIBTLV_OPT_L4BVARL:
             ret = (1U << 28) - 1;
             break;
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
         default:
             ret = 0;
             break;
@@ -141,9 +141,9 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
         case LIBTLV_OPT_T2BYTES:
             len = 2;
             break;
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
         case LIBTLV_OPT_T4BVARL:
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
             if (opt & LIBTLV_OPT_PADDING)   /* avoid 0x7F|0x80  */
             {
                 if (t < (1U << 7))          /*  7 bits:      7F */
@@ -156,7 +156,7 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
                     len = 4;
             }
             else /* no padding */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
             {
                 if (t < (1U << 7))          /*  7 bits:      7F */
                     len = 1;
@@ -168,7 +168,7 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
                     len = 4;
             }
             break;
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
         default:
             len = 0;
             break;
@@ -187,7 +187,7 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
         case LIBTLV_OPT_L2BYTES:
             len = 2;
             break;
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
         case LIBTLV_OPT_L4BVARL:
             if (l < (1U << 7))          /*  7 bits:      7F */
                 len = 1;
@@ -198,7 +198,7 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
             else /* < 0x10000000 */     /* 28 bits: FFFFFFF */
                 len = 4;
             break;
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
         default:
             len = 0;
             break;
@@ -223,7 +223,7 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
  */
 static inline unsigned int LIBTLV_OPT_GETALIGN(unsigned int opt, unsigned int tsz, unsigned int lsz, uintptr_t ptr)
 {
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     unsigned int ret = 0;
     unsigned int mask;
 
@@ -253,16 +253,16 @@ static inline unsigned int LIBTLV_OPT_GETALIGN(unsigned int opt, unsigned int ts
     }
 
     return ret;
-#else  /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else  /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     return 0;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 }
 
 /**
  * LIBTLV_OPT_GETTYPE - get next type assuming size > 0
  * padding can be skipped here
  */
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 #define LIBTLV_OPT_GETTYPE_PADDING(_opt, _type, _ptr, _size, _nul, _end, _err) \
     if (_opt & LIBTLV_OPT_PADDING)                                             \
     {                                                                          \
@@ -273,11 +273,11 @@ static inline unsigned int LIBTLV_OPT_GETALIGN(unsigned int opt, unsigned int ts
                 _end;                                                          \
         }                                                                      \
     }
-#else /*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#else /*ENABLE_LIBTLV_PADDING_SUPPORT*/
 #define LIBTLV_OPT_GETTYPE_PADDING(_opt, _type, _ptr, _size, _nul, _end, _err)
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
 #define LIBTLV_OPT_GETTYPE_VARLEN(_opt, _type, _ptr, _size, _nul, _end, _err)  \
         case LIBTLV_OPT_T4BVARL:                                               \
             /* byte 0 cannot be zero */                                        \
@@ -313,9 +313,9 @@ static inline unsigned int LIBTLV_OPT_GETALIGN(unsigned int opt, unsigned int ts
             if ((((uint8_t*)_ptr)[-1] & 0x80U) != 0)                           \
                 _err;                                                          \
             break;
-#else /*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#else /*ENABLE_LIBTLV_VARLEN_SUPPORT*/
 #define LIBTLV_OPT_GETTYPE_VARLEN(_opt, _type, _ptr, _size, _nul, _end, _err)
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
 
 #define LIBTLV_OPT_GETTYPE(_opt, _type, _ptr, _size, _nul, _end, _err)         \
     LIBTLV_OPT_GETTYPE_PADDING(_opt, _type, _ptr, _size, _nul, _end, _err)     \
@@ -348,7 +348,7 @@ static inline unsigned int LIBTLV_OPT_GETALIGN(unsigned int opt, unsigned int ts
 /**
  * LIBTLV_OPT_GETLENGTH - get next length assuming size > 0
  */
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
 #define LIBTLV_OPT_GETLENGTH_VARLENG(_opt, _length, _ptr, _size, _err)         \
         case LIBTLV_OPT_L4BVARL:                                               \
             /* byte 0 */                                                       \
@@ -377,9 +377,9 @@ static inline unsigned int LIBTLV_OPT_GETALIGN(unsigned int opt, unsigned int ts
             if ((((uint8_t*)_ptr)[-1] & 0x80U) != 0)                           \
                 _err;                                                          \
             break;
-#else /*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#else /*ENABLE_LIBTLV_VARLEN_SUPPORT*/
 #define LIBTLV_OPT_GETLENGTH_VARLENG(_opt, _length, _ptr, _size, _err)
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
 
 #define LIBTLV_OPT_GETLENGTH(_opt, _length, _ptr, _size, _err)                 \
     switch (_opt & LIBTLV_OPT_LSZMASK)                                         \
@@ -551,7 +551,7 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
         {
             if (t)
             {
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
                 unsigned int pad, tsz, lsz;
                 unsigned int sz = LIBTLV_OPT_GETTLVSZ(opt, t, l, &tsz, &lsz);
                 if (size < sz)
@@ -565,11 +565,11 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
                     ptr += pad;
                     sz += pad;
                 }
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
                 unsigned int sz = LIBTLV_OPT_GETTLVSZ(opt, t, l, NULL, NULL);
                 if (size < sz)
                     return -ENOSPC;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
                 /* put type */
                 switch (opt & LIBTLV_OPT_TSZMASK)
                 {

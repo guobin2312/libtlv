@@ -750,7 +750,7 @@ static int test_t1l1n_output(const char *name)
  * END tll1n: t=1 l=1 no padding
  */
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 /*
  * BEGIN tll1p: t=1 l=1 with padding
  */
@@ -1484,14 +1484,14 @@ static int test_t1l1p_output(const char *name)
     tmp[off++] = *buf++ = 0xff;
     --len;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 2 */
     tmp[off++] = 0xff; // 1
     p = 1;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=1, l=1, v=1 */
     tmp[off+0] = 1;
@@ -1505,20 +1505,20 @@ static int test_t1l1p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 4 */
     tmp[off++] = 0xff; // 5
     tmp[off++] = 0xff; // 6
     tmp[off++] = 0xff; // 7
     p = 3;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=2, l=3, v=123 */
     tmp[off+0] = 2;
@@ -1532,20 +1532,20 @@ static int test_t1l1p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 8 */
     tmp[off++] = 0xff; // 13
     tmp[off++] = 0xff; // 14
     tmp[off++] = 0xff; // 15
     p = 3;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=3, l=4, v=123\0 */
     tmp[off+0] = 3;
@@ -1593,7 +1593,7 @@ static int test_t1l1p_output(const char *name)
 /*
  * END tll1p: t=1 l=1 with padding
  */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
 /*
  * BEGIN t2l1n: t=2 l=1 no padding
@@ -2356,7 +2356,7 @@ static int test_t2l1n_output(const char *name)
  * END t2l1n: t=2 l=1 no padding
  */
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 /*
  * BEGIN t2l1p: t=2 l=1 with padding
  */
@@ -3228,7 +3228,7 @@ static int test_t2l1p_output(const char *name)
     tmp[off++] = *buf++ = 0xff;
     --len;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align l to 8 */
     tmp[off++] = 0xff; // 1
     tmp[off++] = 0xff; // 2
@@ -3236,7 +3236,7 @@ static int test_t2l1p_output(const char *name)
     tmp[off++] = 0xff; // 4
     tmp[off++] = 0xff; // 5
     p = 5;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -3247,7 +3247,7 @@ static int test_t2l1p_output(const char *name)
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=01, l=1, v=1 */
     t = 1;
@@ -3263,14 +3263,14 @@ static int test_t2l1p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align l to 16 */
     tmp[off++] = 0xff; // 10
     tmp[off++] = 0xff; // 11
     tmp[off++] = 0xff; // 12
     tmp[off++] = 0xff; // 13
     p = 4;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -3279,7 +3279,7 @@ static int test_t2l1p_output(const char *name)
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=2, l=3, v=123 */
     t = 2;
@@ -3295,7 +3295,7 @@ static int test_t2l1p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align l to 32 */
     tmp[off++] = 0xff; // 20
     tmp[off++] = 0xff; // 21
@@ -3308,7 +3308,7 @@ static int test_t2l1p_output(const char *name)
     tmp[off++] = 0xff; // 28
     tmp[off++] = 0xff; // 29
     p = 10;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -3329,7 +3329,7 @@ static int test_t2l1p_output(const char *name)
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=3, l=4, v=123\0 */
     t = 3;
@@ -3383,7 +3383,7 @@ static int test_t2l1p_output(const char *name)
 /*
  * END t2l1p: t=2 l=1 with padding
  */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
 /*
  * BEGIN t1l2n: t=1 l=2 no padding
@@ -4115,7 +4115,7 @@ static int test_t1l2n_output(const char *name)
  * END t1l2n: t=1 l=2 no padding
  */
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 /*
  * BEGIN t1l2p: t=1 l=2 with padding
  */
@@ -4936,11 +4936,11 @@ static int test_t1l2p_output(const char *name)
     tmp[off++] = *buf++ = 0xff;
     --len;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align v to 2 */
     // 1
     p = 0;
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
     /* t=1, l=1, v=1 */
     tmp[off+0] = 1;
@@ -4956,11 +4956,11 @@ static int test_t1l2p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align v to 4 */
     // 5
     p = 0;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=2, l=13, v='2'x259 */
     tmp[off+0] = 2;
@@ -4976,15 +4976,15 @@ static int test_t1l2p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align v to 8 */
     tmp[off++] = 0xff; // 267
     tmp[off++] = 0xff; // 268
     p = 2;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=3, l=4, v=123\0 */
     tmp[off+0] = 3;
@@ -5038,7 +5038,7 @@ static int test_t1l2p_output(const char *name)
 /*
  * END t1l2p: t=1 l=2 with padding
  */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
 /*
  * BEGIN t2l2n: t=2 l=2 no padding
@@ -5852,7 +5852,7 @@ static int test_t2l2n_output(const char *name)
  * END t2l2n: t=2 l=2 no padding
  */
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 /*
  * BEGIN t2l2p: t=2 l=2 with padding
  */
@@ -6772,14 +6772,14 @@ static int test_t2l2p_output(const char *name)
     tmp[off++] = *buf++ = 0xff;
     --len;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align l to 2 */
     tmp[off++] = 0xff; // 1
     p = 1;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=01, l=1, v=1 */
     t = 1;
@@ -6797,20 +6797,20 @@ static int test_t2l2p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align l to 4 */
     tmp[off++] = 0xff; // 7
     tmp[off++] = 0xff; // 8
     tmp[off++] = 0xff; // 9
     p = 3;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=12, l=13, v='2'x259 */
     t = 0x0102;
@@ -6828,7 +6828,7 @@ static int test_t2l2p_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 16 */
     tmp[off++] = 0xff; // 273
     tmp[off++] = 0xff; // 274
@@ -6846,7 +6846,7 @@ static int test_t2l2p_output(const char *name)
     tmp[off++] = 0xff; // 286
     tmp[off++] = 0xff; // 287
     p = 15;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -6877,7 +6877,7 @@ static int test_t2l2p_output(const char *name)
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=23, l=4, v=123\0 */
     t = 0x0203;
@@ -6937,9 +6937,9 @@ static int test_t2l2p_output(const char *name)
 /*
  * END t2l2p: t=2 l=2 with padding
  */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
 /*
  * BEGIN t1lvn: t=1 l=v no padding
  */
@@ -7712,7 +7712,7 @@ static int test_t1lvn_output(const char *name)
  * END t1lvn: t=1 l=v no padding
  */
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 /*
  * BEGIN t1lvp: t=1 l=v with padding
  */
@@ -8613,14 +8613,14 @@ static int test_t1lvp_output(const char *name)
     len -= ret;
     off += ret;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align v to 8 */
     tmp[off++] = 0xff; // 4
     p = 1;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=2, l=13, v='2'x259 */
     t = 2;
@@ -8637,20 +8637,20 @@ static int test_t1lvp_output(const char *name)
     len -= ret;
     off += ret - p;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align v to 16 */
     tmp[off++] = 0xff; // 267
     tmp[off++] = 0xff; // 268
     tmp[off++] = 0xff; // 269
     p = 3;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=3, l=4, v=123\0 */
     t = 3;
@@ -8704,7 +8704,7 @@ static int test_t1lvp_output(const char *name)
 /*
  * END t1lvp: t=1 l=v with padding
  */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
 /*
  * BEGIN t2lvn: t=2 l=v no padding
@@ -9549,7 +9549,7 @@ static int test_t2lvn_output(const char *name)
  * END t2lvn: t=2 l=v no padding
  */
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 /*
  * BEGIN t2lvp: t=2 l=v with padding
  */
@@ -10604,7 +10604,7 @@ static int test_t2lvp_output(const char *name)
     len -= ret;
     off += ret;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 32 */
     tmp[off++] = 0xff; // 269
     tmp[off++] = 0xff; // 270
@@ -10626,7 +10626,7 @@ static int test_t2lvp_output(const char *name)
     tmp[off++] = 0xff; // 286
     tmp[off++] = 0xff; // 287
     p = 19;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -10665,7 +10665,7 @@ static int test_t2lvp_output(const char *name)
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=3, l=4, v=123\0 */
     t = 3;
@@ -10722,7 +10722,7 @@ static int test_t2lvp_output(const char *name)
 /*
  * END t2lvp: t=2 l=v with padding
  */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
 /*
  * BEGIN tvlvn: t=v l=v no padding
@@ -11605,7 +11605,7 @@ static int test_tvlvn_output(const char *name)
  * END tvlvn: t=v l=v no padding
  */
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
 /*
  * BEGIN tvlvp: t=v l=v with padding
  */
@@ -12786,7 +12786,7 @@ static int test_tvlvp_output(const char *name)
     len -= ret;
     off += ret;
 
-#ifdef  CONFIG_LIBTLV_ALIGN_SUPPORT
+#if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 32 */
     tmp[off++] = 0xff; // 268
     tmp[off++] = 0xff; // 269
@@ -12806,7 +12806,7 @@ static int test_tvlvp_output(const char *name)
     tmp[off++] = 0xff; // 283
     tmp[off++] = 0xff; // 284
     p = 17;
-#else /*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -12841,7 +12841,7 @@ static int test_tvlvp_output(const char *name)
     --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
-#endif/*CONFIG_LIBTLV_ALIGN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
     /* t=13, l=4, v=123\0 */
     t = 0x0103;
@@ -12896,8 +12896,8 @@ static int test_tvlvp_output(const char *name)
 /*
  * END tvlvp: t=v l=v with padding
  */
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
 
 int main(int argc, char *argv[])
 {
@@ -12915,14 +12915,14 @@ int main(int argc, char *argv[])
         { "t1l1n output ",   test_t1l1n_output    },
         { "",                NULL                 },
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
         { "t1l1p getret ",   test_t1l1p_getret    },
         { "t1l1p input  ",   test_t1l1p_input     },
         { "t1l1p getnext",   test_t1l1p_getnext   },
         { "t1l1p putret ",   test_t1l1p_putret    },
         { "t1l1p output ",   test_t1l1p_output    },
         { "",                NULL                 },
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
         { "t2l1n getret ",   test_t2l1n_getret    },
         { "t2l1n input  ",   test_t2l1n_input     },
@@ -12931,14 +12931,14 @@ int main(int argc, char *argv[])
         { "t2l1n output ",   test_t2l1n_output    },
         { "",                NULL                 },
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
         { "t2l1p getret ",   test_t2l1p_getret    },
         { "t2l1p input  ",   test_t2l1p_input     },
         { "t2l1p getnext",   test_t2l1p_getnext   },
         { "t2l1p putret ",   test_t2l1p_putret    },
         { "t2l1p output ",   test_t2l1p_output    },
         { "",                NULL                 },
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
         { "t1l2n getret ",   test_t1l2n_getret    },
         { "t1l2n input  ",   test_t1l2n_input     },
@@ -12947,14 +12947,14 @@ int main(int argc, char *argv[])
         { "t1l2n output ",   test_t1l2n_output    },
         { "",                NULL                 },
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
         { "t1l2p getret ",   test_t1l2p_getret    },
         { "t1l2p input  ",   test_t1l2p_input     },
         { "t1l2p getnext",   test_t1l2p_getnext   },
         { "t1l2p putret ",   test_t1l2p_putret    },
         { "t1l2p output ",   test_t1l2p_output    },
         { "",                NULL                 },
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
         { "t2l2n getret ",   test_t2l2n_getret    },
         { "t2l2n input  ",   test_t2l2n_input     },
@@ -12963,16 +12963,16 @@ int main(int argc, char *argv[])
         { "t2l2n output ",   test_t2l2n_output    },
         { "",                NULL                 },
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
         { "t2l2p getret ",   test_t2l2p_getret    },
         { "t2l2p input  ",   test_t2l2p_input     },
         { "t2l2p getnext",   test_t2l2p_getnext   },
         { "t2l2p putret ",   test_t2l2p_putret    },
         { "t2l2p output ",   test_t2l2p_output    },
         { "",                NULL                 },
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
-#ifdef  CONFIG_LIBTLV_VARLEN_SUPPORT
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
         { "t1lvn getret ",   test_t1lvn_getret    },
         { "t1lvn input  ",   test_t1lvn_input     },
         { "t1lvn getnext",   test_t1lvn_getnext   },
@@ -12980,14 +12980,14 @@ int main(int argc, char *argv[])
         { "t1lvn output ",   test_t1lvn_output    },
         { "",                NULL                 },
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
         { "t1lvp getret ",   test_t1lvp_getret    },
         { "t1lvp input  ",   test_t1lvp_input     },
         { "t1lvp getnext",   test_t1lvp_getnext   },
         { "t1lvp putret ",   test_t1lvp_putret    },
         { "t1lvp output ",   test_t1lvp_output    },
         { "",                NULL                 },
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
         { "t2lvn getret ",   test_t2lvn_getret    },
         { "t2lvn input  ",   test_t2lvn_input     },
@@ -12996,14 +12996,14 @@ int main(int argc, char *argv[])
         { "t2lvn output ",   test_t2lvn_output    },
         { "",                NULL                 },
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
         { "t2lvp getret ",   test_t2lvp_getret    },
         { "t2lvp input  ",   test_t2lvp_input     },
         { "t2lvp getnext",   test_t2lvp_getnext   },
         { "t2lvp putret ",   test_t2lvp_putret    },
         { "t2lvp output ",   test_t2lvp_output    },
         { "",                NULL                 },
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
 
         { "tvlvn getret ",   test_tvlvn_getret    },
         { "tvlvn input  ",   test_tvlvn_input     },
@@ -13012,15 +13012,15 @@ int main(int argc, char *argv[])
         { "tvlvn output ",   test_tvlvn_output    },
         { "",                NULL                 },
 
-#ifdef  CONFIG_LIBTLV_PADDING_SUPPORT
+#if     ENABLE_LIBTLV_PADDING_SUPPORT
         { "tvlvp getret ",   test_tvlvp_getret    },
         { "tvlvp input  ",   test_tvlvp_input     },
         { "tvlvp getnext",   test_tvlvp_getnext   },
         { "tvlvp putret ",   test_tvlvp_putret    },
         { "tvlvp output ",   test_tvlvp_output    },
         { "",                NULL                 },
-#endif/*CONFIG_LIBTLV_PADDING_SUPPORT*/
-#endif/*CONFIG_LIBTLV_VARLEN_SUPPORT*/
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
+#endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
 
         { NULL, NULL },
     };
