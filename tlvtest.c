@@ -693,13 +693,18 @@ static int test_t1l1n_output(const char *name)
     len -= ret;
     off += ret;
 
-    /* t=2, l=3, v=123 */
+    /* init+fini: t=2, l=3, v=123 */
     tmp[off+0] = 2;
     tmp[off+1] = 3;
     memcpy(&tmp[off+2], "123", 3);
-    ret = libtlv_put(opt, buf, len, tmp[off+0], tmp[off+1], &tmp[off+2]);
-    if (ret != 2 + tmp[off+1])
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, tmp[off+0], tmp[off+1], NULL);
+    if (ret != 2 || buf[0] || buf[1])
         RETURN_ERROR(ERROR_PUT);
+    memcpy(buf+ret, "123", tmp[off+1]);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, 2, tmp[off+0], tmp[off+1], &tmp[off+2]);
+    if (ret != 2)
+        RETURN_ERROR(ERROR_PUT);
+    ret += tmp[off+1];
     buf += ret;
     len -= ret;
     off += ret;
@@ -1520,14 +1525,20 @@ static int test_t1l1p_output(const char *name)
     --len;
 #endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
-    /* t=2, l=3, v=123 */
+    /* init+fini: t=2, l=3, v=123 */
     tmp[off+0] = 2;
     tmp[off+1] = 3;
     memcpy(&tmp[off+2], "123", 3);
-    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNT | LIBTLV_OPT_ALN4B,
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNT | LIBTLV_OPT_ALN4B | LIBTLV_OPT_PUT_INIT,
                      buf, len, tmp[off+0], tmp[off+1], &tmp[off+2]);
-    if (ret != p + 2 + tmp[off+1])
+    if (ret != p + 2 || buf[p+0] || buf[p+1])
         RETURN_ERROR(ERROR_PUT);
+    memcpy(buf+ret, "123", tmp[off+1]);
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNT | LIBTLV_OPT_ALN4B | LIBTLV_OPT_PUT_FINI,
+                     buf, len, tmp[off+0], tmp[off+1], &tmp[off+2]);
+    if (ret != p + 2)
+        RETURN_ERROR(ERROR_PUT);
+    ret += tmp[off+1];
     buf += ret;
     len -= ret;
     off += ret - p;
@@ -2291,15 +2302,20 @@ static int test_t2l1n_output(const char *name)
     len -= ret;
     off += ret;
 
-    /* t=2, l=3, v=123 */
+    /* init+fini: t=2, l=3, v=123 */
     t = 2;
     tmp[off+0] = (t >> 8);
     tmp[off+1] = (t & 0xFF);
     tmp[off+2] = 3;
     memcpy(&tmp[off+3], "123", 3);
-    ret = libtlv_put(opt, buf, len, t, tmp[off+2], &tmp[off+3]);
-    if (ret != 3 + tmp[off+2])
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, t, tmp[off+2], &tmp[off+3]);
+    if (ret != 3 || buf[0] || buf[1] || buf[2])
         RETURN_ERROR(ERROR_PUT);
+    memcpy(buf+ret, "123", 3);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, t, tmp[off+2], &tmp[off+3]);
+    if (ret != 3)
+        RETURN_ERROR(ERROR_PUT);
+    ret += 3;
     buf += ret;
     len -= ret;
     off += ret;
@@ -3281,16 +3297,22 @@ static int test_t2l1p_output(const char *name)
     --len;
 #endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
-    /* t=2, l=3, v=123 */
+    /* init+fini: t=2, l=3, v=123 */
     t = 2;
     tmp[off+0] = (t >> 8);
     tmp[off+1] = (t & 0xFF);
     tmp[off+2] = 3;
     memcpy(&tmp[off+3], "123", 3);
-    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNL | LIBTLV_OPT_ALN16B,
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNL | LIBTLV_OPT_ALN16B | LIBTLV_OPT_PUT_INIT,
                      buf, len, t, tmp[off+2], &tmp[off+3]);
-    if (ret != p + 3 + tmp[off+2])
+    if (ret != p + 3 || buf[p+0] || buf[p+1] || buf[p+2])
         RETURN_ERROR(ERROR_PUT);
+    memcpy(&buf[p+3], "123", 3);
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNL | LIBTLV_OPT_ALN16B | LIBTLV_OPT_PUT_FINI,
+                     buf, len, t, tmp[off+2], &tmp[off+3]);
+    if (ret != p + 3)
+        RETURN_ERROR(ERROR_PUT);
+    ret += tmp[off+2];
     buf += ret;
     len -= ret;
     off += ret - p;
@@ -4050,15 +4072,20 @@ static int test_t1l2n_output(const char *name)
     len -= ret;
     off += ret;
 
-    /* t=2, l=13, v='2'x259 */
+    /* init+fini: t=2, l=13, v='2'x259 */
     tmp[off+0] = 2;
     l = 0x0103;
     tmp[off+1] = (l >> 8);
     tmp[off+2] = (l & 0xFF);
     memset(&tmp[off+3], '2', l);
-    ret = libtlv_put(opt, buf, len, tmp[off+0], l, &tmp[off+3]);
-    if (ret != 3 + l)
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, tmp[off+0], l, &tmp[off+3]);
+    if (ret != 3 || buf[0] || buf[1] || buf[2])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[3], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, tmp[off+0], l, &tmp[off+3]);
+    if (ret != 3)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret;
@@ -4962,16 +4989,22 @@ static int test_t1l2p_output(const char *name)
     p = 0;
 #endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
 
-    /* t=2, l=13, v='2'x259 */
+    /* ini+fini: t=2, l=13, v='2'x259 */
     tmp[off+0] = 2;
     l = 0x0103;
     tmp[off+1] = (l >> 8);
     tmp[off+2] = (l & 0xFF);
     memset(&tmp[off+3], '2', l);
-    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNV | LIBTLV_OPT_ALN4B,
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNV | LIBTLV_OPT_ALN4B | LIBTLV_OPT_PUT_INIT,
                      buf, len, tmp[off+0], l, &tmp[off+3]);
-    if (ret != p + 3 + l)
+    if (ret != p + 3 || buf[p] || buf[p+1] || buf[p+2])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[p+3], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNV | LIBTLV_OPT_ALN4B | LIBTLV_OPT_PUT_FINI,
+                     buf, len, tmp[off+0], l, &tmp[off+3]);
+    if (ret != p + 3)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret - p;
@@ -5787,9 +5820,14 @@ static int test_t2l2n_output(const char *name)
     tmp[off+2] = (l >> 8);
     tmp[off+3] = (l & 0xFF);
     memset(&tmp[off+4], '2', l);
-    ret = libtlv_put(opt, buf, len, t, l, &tmp[off+4]);
-    if (ret != 4 + l)
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, t, l, &tmp[off+4]);
+    if (ret != 4 || buf[0] || buf[1] || buf[2] || buf[3])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[4], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, t, l, &tmp[off+4]);
+    if (ret != 4)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret;
@@ -6820,10 +6858,16 @@ static int test_t2l2p_output(const char *name)
     tmp[off+2] = (l >> 8);
     tmp[off+3] = (l & 0xFF);
     memset(&tmp[off+4], '2', l);
-    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNL | LIBTLV_OPT_ALN4B,
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNL | LIBTLV_OPT_ALN4B | LIBTLV_OPT_PUT_INIT,
                      buf, len, t, l, &tmp[off+4]);
-    if (ret != p + 4 + l)
+    if (ret != p + 4 || buf[p] || buf[p+1] || buf[p+2] || buf[p+3])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[p+4], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNL | LIBTLV_OPT_ALN4B | LIBTLV_OPT_PUT_FINI,
+                     buf, len, t, l, &tmp[off+4]);
+    if (ret != p + 4)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret - p;
@@ -7650,12 +7694,19 @@ static int test_t1lvn_output(const char *name)
     t = 2;
     tmp[off+0] = t;
     l = 0x0103;
-    tmp[off+1] = 0x80 | (l >> 7);
-    tmp[off+2] = 0x7f & l;
-    memset(&tmp[off+3], '2', l);
-    ret = libtlv_put(opt, buf, len, t, l, &tmp[off+3]);
-    if (ret != 3 + l)
+    tmp[off+1] = 0x80;
+    tmp[off+2] = 0x80;
+    tmp[off+3] = 0x80 | (l >> 7);
+    tmp[off+4] = 0x7f & l;
+    memset(&tmp[off+5], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, t, l, &tmp[off+5]);
+    if (ret != 5 || buf[0] || buf[1] || buf[2] || buf[3] || buf[4])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[5], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, t, l, &tmp[off+5]);
+    if (ret != 5)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret;
@@ -8616,8 +8667,26 @@ static int test_t1lvp_output(const char *name)
 #if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align v to 8 */
     tmp[off++] = 0xff; // 4
-    p = 1;
+    tmp[off++] = 0xff; // 5
+    tmp[off++] = 0xff; // 6
+    tmp[off++] = 0xff; // 7
+    tmp[off++] = 0xff; // 8
+    tmp[off++] = 0xff; // 9
+    tmp[off++] = 0xff; // 10
+    p = 7;
 #else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
 #endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
@@ -8626,24 +8695,56 @@ static int test_t1lvp_output(const char *name)
     t = 2;
     tmp[off+0] = t;
     l = 0x0103;
-    tmp[off+1] = 0x80 | (l >> 7);
-    tmp[off+2] = 0x7f & l;
-    memset(&tmp[off+3], '2', l);
-    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNV | LIBTLV_OPT_ALN8B,
-                     buf, len, t, l, &tmp[off+3]);
-    if (ret != p + 3 + l)
+    tmp[off+1] = 0x80;
+    tmp[off+2] = 0x80;
+    tmp[off+3] = 0x80 | (l >> 7);
+    tmp[off+4] = 0x7f & l;
+    memset(&tmp[off+5], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNV | LIBTLV_OPT_ALN8B | LIBTLV_OPT_PUT_INIT,
+                     buf, len, t, l, &tmp[off+5]);
+    if (ret != p + 5 || buf[0] || buf[1] || buf[2] || buf[3] || buf[4])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[p + 5], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_ALIGNV | LIBTLV_OPT_ALN8B | LIBTLV_OPT_PUT_FINI,
+                     buf, len, t, l, &tmp[off+5]);
+    if (ret != p + 5)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret - p;
 
 #if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align v to 16 */
-    tmp[off++] = 0xff; // 267
-    tmp[off++] = 0xff; // 268
-    tmp[off++] = 0xff; // 269
-    p = 3;
+    tmp[off++] = 0xff; // 275
+    tmp[off++] = 0xff; // 276
+    tmp[off++] = 0xff; // 277
+    tmp[off++] = 0xff; // 278
+    tmp[off++] = 0xff; // 279
+    tmp[off++] = 0xff; // 280
+    tmp[off++] = 0xff; // 281
+    tmp[off++] = 0xff; // 282
+    tmp[off++] = 0xff; // 283
+    tmp[off++] = 0xff; // 284
+    tmp[off++] = 0xff; // 285
+    p = 11;
 #else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
+    tmp[off++] = *buf++ = 0xff;
+    --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -9484,12 +9585,19 @@ static int test_t2lvn_output(const char *name)
     tmp[off+0] = 0;
     tmp[off+1] = t;
     l = 0x0103;
-    tmp[off+2] = 0x80 | (l >> 7);
-    tmp[off+3] = 0x7f & l;
-    memset(&tmp[off+4], '2', l);
-    ret = libtlv_put(opt, buf, len, t, l, &tmp[off+4]);
-    if (ret != 4 + l)
+    tmp[off+2] = 0x80;
+    tmp[off+3] = 0x80;
+    tmp[off+4] = 0x80 | (l >> 7);
+    tmp[off+5] = 0x7f & l;
+    memset(&tmp[off+6], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, t, l, &tmp[off+6]);
+    if (ret != 6)
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[6], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, t, l, &tmp[off+6]);
+    if (ret != 6)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret;
@@ -10594,20 +10702,25 @@ static int test_t2lvp_output(const char *name)
     tmp[off+0] = 0;
     tmp[off+1] = t;
     l = 0x0103;
-    tmp[off+2] = 0x80 | (l >> 7);
-    tmp[off+3] = 0x7f & l;
-    memset(&tmp[off+4], '2', l);
-    ret = libtlv_put(opt, buf, len, t, l, &tmp[off+4]);
-    if (ret != 4 + l)
+    tmp[off+2] = 0x80;
+    tmp[off+3] = 0x80;
+    tmp[off+4] = 0x80 | (l >> 7);
+    tmp[off+5] = 0x7f & l;
+    memset(&tmp[off+6], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, t, l, &tmp[off+6]);
+    if (ret != 6 || buf[0] || buf[1] || buf[2] || buf[3] || buf[4] || buf[5])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[6], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, t, l, &tmp[off+6]);
+    if (ret != 6)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret;
 
 #if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 32 */
-    tmp[off++] = 0xff; // 269
-    tmp[off++] = 0xff; // 270
     tmp[off++] = 0xff; // 271
     tmp[off++] = 0xff; // 272
     tmp[off++] = 0xff; // 273
@@ -10625,12 +10738,8 @@ static int test_t2lvp_output(const char *name)
     tmp[off++] = 0xff; // 285
     tmp[off++] = 0xff; // 286
     tmp[off++] = 0xff; // 287
-    p = 19;
+    p = 17;
 #else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
-    tmp[off++] = *buf++ = 0xff;
-    --len;
-    tmp[off++] = *buf++ = 0xff;
-    --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;
@@ -11539,15 +11648,24 @@ static int test_tvlvn_output(const char *name)
 
     /* t=12, l=13, v='2'x259 */
     t = 0x0102;
-    tmp[off+0] = 0x80 | (t >> 7);
-    tmp[off+1] = 0x7f & t;
+    tmp[off+0] = 0x80;
+    tmp[off+1] = 0x80;
+    tmp[off+2] = 0x80 | (t >> 7);
+    tmp[off+3] = 0x7f & t;
     l = 0x0103;
-    tmp[off+2] = 0x80 | (l >> 7);
-    tmp[off+3] = 0x7f & l;
-    memset(&tmp[off+4], '2', l);
-    ret = libtlv_put(opt, buf, len, t, l, &tmp[off+4]);
-    if (ret != 4 + l)
+    tmp[off+4] = 0x80;
+    tmp[off+5] = 0x80;
+    tmp[off+6] = 0x80 | (l >> 7);
+    tmp[off+7] = 0x7f & l;
+    memset(&tmp[off+8], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, t, l, &tmp[off+8]);
+    if (ret != 8 || buf[0] || buf[1] || buf[2] || buf[3] || buf[4] || buf[5] || buf[6] || buf[7])
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[8], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, t, l, &tmp[off+8]);
+    if (ret != 8)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret;
@@ -12773,25 +12891,30 @@ static int test_tvlvp_output(const char *name)
 
     /* t=12, l=13, v='2'x259 */
     t = 0x0102;
-    tmp[off+0] = 0x80 | (t >> 7);
-    tmp[off+1] = 0x7f & t;
+    tmp[off+0] = 0x80;
+    tmp[off+1] = 0x80;
+    tmp[off+2] = 0x80 | (t >> 7);
+    tmp[off+3] = 0x7f & t;
     l = 0x0103;
-    tmp[off+2] = 0x80 | (l >> 7);
-    tmp[off+3] = 0x7f & l;
-    memset(&tmp[off+4], '2', l);
-    ret = libtlv_put(opt, buf, len, t, l, &tmp[off+4]);
-    if (ret != 4 + l)
+    tmp[off+4] = 0x80;
+    tmp[off+5] = 0x80;
+    tmp[off+6] = 0x80 | (l >> 7);
+    tmp[off+7] = 0x7f & l;
+    memset(&tmp[off+8], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_INIT, buf, len, t, l, &tmp[off+8]);
+    if (ret != 8)
         RETURN_ERROR(ERROR_PUT);
+    memset(&buf[8], '2', l);
+    ret = libtlv_put(opt | LIBTLV_OPT_PUT_FINI, buf, len, t, l, &tmp[off+8]);
+    if (ret != 8)
+        RETURN_ERROR(ERROR_PUT);
+    ret += l;
     buf += ret;
     len -= ret;
     off += ret;
 
 #if     ENABLE_LIBTLV_ALIGN_SUPPORT
     /* align t to 32 */
-    tmp[off++] = 0xff; // 268
-    tmp[off++] = 0xff; // 269
-    tmp[off++] = 0xff; // 270
-    tmp[off++] = 0xff; // 271
     tmp[off++] = 0xff; // 272
     tmp[off++] = 0xff; // 273
     tmp[off++] = 0xff; // 274
@@ -12805,16 +12928,8 @@ static int test_tvlvp_output(const char *name)
     tmp[off++] = 0xff; // 282
     tmp[off++] = 0xff; // 283
     tmp[off++] = 0xff; // 284
-    p = 17;
+    p = 13;
 #else /*ENABLE_LIBTLV_ALIGN_SUPPORT*/
-    tmp[off++] = *buf++ = 0xff;
-    --len;
-    tmp[off++] = *buf++ = 0xff;
-    --len;
-    tmp[off++] = *buf++ = 0xff;
-    --len;
-    tmp[off++] = *buf++ = 0xff;
-    --len;
     tmp[off++] = *buf++ = 0xff;
     --len;
     tmp[off++] = *buf++ = 0xff;

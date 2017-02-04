@@ -65,6 +65,11 @@
 
 #define LIBTLV_OPT_GET_LAST       0x01000000U /* get last occurred */
 #define LIBTLV_OPT_PUT_ONCE       0x02000000U /* put only one copy */
+#define LIBTLV_OPT_PUT_NULLV      0x04000000U /* do not put any v  */
+#define LIBTLV_OPT_PUT_CLRTL      0x08000000U /* set t and l zero  */
+#define LIBTLV_OPT_PUT_MAXTL      0x10000000U /* assume tl are max */
+#define LIBTLV_OPT_PUT_INIT       (LIBTLV_OPT_PUT_NULLV | LIBTLV_OPT_PUT_MAXTL | LIBTLV_OPT_PUT_CLRTL)
+#define LIBTLV_OPT_PUT_FINI       (LIBTLV_OPT_PUT_NULLV | LIBTLV_OPT_PUT_MAXTL)
 
 #define LIBTLV_OPT_T1L1N          0
 #define LIBTLV_OPT_T1L1P          (LIBTLV_OPT_PADDING)

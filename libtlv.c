@@ -130,7 +130,7 @@ static inline unsigned int LIBTLV_OPT_LSZMAX(unsigned int opt)
 static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t, unsigned int l,
                                                unsigned int *tsz, unsigned int *lsz)
 {
-    unsigned int ret = l;
+    unsigned int ret = (opt & LIBTLV_OPT_PUT_NULLV) ? 0 : l;
     unsigned int len;
 
     switch (opt & LIBTLV_OPT_TSZMASK)
@@ -143,6 +143,11 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
             break;
 #if     ENABLE_LIBTLV_VARLEN_SUPPORT
         case LIBTLV_OPT_T4BVARL:
+            if (opt & LIBTLV_OPT_PUT_MAXTL) /* reserve max size */
+            {
+                len = 4;
+            }
+            else
 #if     ENABLE_LIBTLV_PADDING_SUPPORT
             if (opt & LIBTLV_OPT_PADDING)   /* avoid 0x7F|0x80  */
             {
@@ -189,13 +194,15 @@ static inline unsigned int LIBTLV_OPT_GETTLVSZ(unsigned int opt, unsigned int t,
             break;
 #if     ENABLE_LIBTLV_VARLEN_SUPPORT
         case LIBTLV_OPT_L4BVARL:
-            if (l < (1U << 7))          /*  7 bits:      7F */
+            if (opt & LIBTLV_OPT_PUT_MAXTL) /* reserve max size */
+                len = 4;
+            else if (l < (1U << 7))         /* 7 bits:      7F  */
                 len = 1;
-            else if (l < (1U << 14))    /* 14 bits:    3FFF */
+            else if (l < (1U << 14))        /* 14 bits:    3FFF */
                 len = 2;
-            else if (l < (1U << 21))    /* 21 bits:  1FFFFF */
+            else if (l < (1U << 21))        /* 21 bits:  1FFFFF */
                 len = 3;
-            else /* < 0x10000000 */     /* 28 bits: FFFFFFF */
+            else /* < 0x10000000 */         /* 28 bits: FFFFFFF */
                 len = 4;
             break;
 #endif/*ENABLE_LIBTLV_VARLEN_SUPPORT*/
@@ -532,7 +539,7 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
     {
         return -EINVAL;
     }
-    if (t && l && !v)
+    if (t && l && !v && !(opt & LIBTLV_OPT_PUT_NULLV))
     {
         return -EINVAL;
     }
@@ -561,7 +568,7 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
                 {
                     if (size < pad+sz)
                         return -ENOSPC;
-                    memset(ptr, 0xff, pad);
+                    memset(ptr, (opt & LIBTLV_OPT_PUT_CLRTL) ? 0 : 0xff, pad);
                     ptr += pad;
                     sz += pad;
                 }
@@ -570,6 +577,20 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
                 if (size < sz)
                     return -ENOSPC;
 #endif/*ENABLE_LIBTLV_ALIGN_SUPPORT*/
+                if (opt & LIBTLV_OPT_PUT_CLRTL)
+                {
+                    if (opt & LIBTLV_OPT_PUT_NULLV)
+                    {
+                        memset(ptr, 0, sz);
+                        ptr += sz;
+                    }
+                    else /* sz includes l */
+                    {
+                        memset(ptr, 0, sz-l);
+                        ptr += sz-l;
+                    }
+                    goto put_value;
+                }
                 /* put type */
                 switch (opt & LIBTLV_OPT_TSZMASK)
                 {
@@ -580,18 +601,34 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
                         *(uint8_t*)(ptr++) = (t >> 8);
                         *(uint8_t*)(ptr++) = (t & 0xFF);
                         break;
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
                     case LIBTLV_OPT_T4BVARL:
                         if (t < (1U << 7))
                         {
+                            if (opt & LIBTLV_OPT_PUT_MAXTL) /* use max size */
+                            {
+                                *(uint8_t*)(ptr++) = 0x80;
+                                *(uint8_t*)(ptr++) = 0x80;
+                                *(uint8_t*)(ptr++) = 0x80;
+                            }
                             *(uint8_t*)(ptr++) = t;
                         }
                         else if (t < (1U << 14))
                         {
+                            if (opt & LIBTLV_OPT_PUT_MAXTL) /* use max size */
+                            {
+                                *(uint8_t*)(ptr++) = 0x80;
+                                *(uint8_t*)(ptr++) = 0x80;
+                            }
                             *(uint8_t*)(ptr++) = ((t >>  7) & 0x7F) | 0x80;
                             *(uint8_t*)(ptr++) = (t & 0x7F);
                         }
                         else if (t < (1U << 21))
                         {
+                            if (opt & LIBTLV_OPT_PUT_MAXTL) /* use max size */
+                            {
+                                *(uint8_t*)(ptr++) = 0x80;
+                            }
                             *(uint8_t*)(ptr++) = ((t >> 14) & 0x7F) | 0x80;
                             *(uint8_t*)(ptr++) = ((t >>  7) & 0x7F) | 0x80;
                             *(uint8_t*)(ptr++) = (t & 0x7F);
@@ -604,6 +641,7 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
                             *(uint8_t*)(ptr++) = (t & 0x7F);
                         }
                         break;
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
                 }
                 /* put length */
                 switch (opt & LIBTLV_OPT_LSZMASK)
@@ -615,18 +653,34 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
                         *(uint8_t*)(ptr++) = (l >> 8);
                         *(uint8_t*)(ptr++) = (l & 0xFF);
                         break;
+#if     ENABLE_LIBTLV_VARLEN_SUPPORT
                     case LIBTLV_OPT_L4BVARL:
                         if (l < (1U << 7))
                         {
+                            if (opt & LIBTLV_OPT_PUT_MAXTL) /* use max size */
+                            {
+                                *(uint8_t*)(ptr++) = 0x80;
+                                *(uint8_t*)(ptr++) = 0x80;
+                                *(uint8_t*)(ptr++) = 0x80;
+                            }
                             *(uint8_t*)(ptr++) = l;
                         }
                         else if (l < (1U << 14))
                         {
+                            if (opt & LIBTLV_OPT_PUT_MAXTL) /* use max size */
+                            {
+                                *(uint8_t*)(ptr++) = 0x80;
+                                *(uint8_t*)(ptr++) = 0x80;
+                            }
                             *(uint8_t*)(ptr++) = ((l >>  7) & 0x7F) | 0x80;
                             *(uint8_t*)(ptr++) = (l & 0x7F);
                         }
                         else if (l < (1U << 21))
                         {
+                            if (opt & LIBTLV_OPT_PUT_MAXTL) /* use max size */
+                            {
+                                *(uint8_t*)(ptr++) = 0x80;
+                            }
                             *(uint8_t*)(ptr++) = ((l >> 14) & 0x7F) | 0x80;
                             *(uint8_t*)(ptr++) = ((l >>  7) & 0x7F) | 0x80;
                             *(uint8_t*)(ptr++) = (l & 0x7F);
@@ -640,7 +694,13 @@ int libtlv_put(unsigned int opt, void *buf, size_t size, unsigned int t, unsigne
                         }
                         break;
                 }
-                if (l) memcpy(ptr, v, l);
+#endif/*ENABLE_LIBTLV_PADDING_SUPPORT*/
+                /* put value */
+put_value:
+                if (!(opt & LIBTLV_OPT_PUT_NULLV) && l)
+                {
+                    memcpy(ptr, v, l);
+                }
                 size -= sz;
             }
             return ret - size;
